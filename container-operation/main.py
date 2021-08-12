@@ -76,7 +76,7 @@ async def channel(ctx, name):
     logger.info("channel created: "+str(name))
     await ctx.guild.create_text_channel(name=name)
 
-#@commands.has_any_role("Kore")
+@commands.has_any_role("Kore")
 @bot.command()
 async def new_project(ctx):
     logger.info("new_project command called by "+ctx.author.name)
@@ -97,7 +97,7 @@ async def new_project(ctx):
     response=function.new_project(name)
    
     if(response=="CONGRATS 🤩"+"\nProject created successfully!"):
-     await ctx.guild.create_text_channel(name=str(name.replace(" ","_")))
+     await ctx.guild.create_text_channel(name=str(name.replace(" ","-")))
     due_embed=discord.Embed(title="", description=response, color=0x11806a)
     await ctx.send(embed=due_embed,delete_after=60)
 
@@ -128,7 +128,7 @@ async def add_user(ctx):
     
      project_name=str(project_dict[int(project_number)])
      project_id=str(project_id_dict[project_name])
-     
+   
     logger.info("project name is: "+str(project_name))
     await function.add_person(ctx,bot,project_id,project_name)
   
@@ -162,7 +162,7 @@ async def remove_user(ctx):
      
     logger.info("project name is :"+str(project_name))
     await function.remove_mem(ctx,bot,project_id,project_name)
-    logger.info("members removed")
+    
 
 
 
@@ -171,6 +171,6 @@ async def remove_user(ctx):
 
 if __name__ == "__main__":
     try:
-        bot.run(os.environ.get('TOKEN'))
+        bot.run((os.environ.get('TOKEN')))
     except Exception as _e:
         logger.error("Exception found at main worker.\n" + str(_e))
