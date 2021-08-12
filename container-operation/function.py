@@ -13,7 +13,7 @@ webpage = "https://www.kore.koders.in/"
 
 
 header = {
-  'X-Redmine-API-Key': os.environ.get('REDMINE_KEY'),
+  'X-Redmine-API-Key':  os.environ.get('REDMINE_KEY'),
  'Content-Type': 'application/json',
 
    }
@@ -58,9 +58,9 @@ def project_list():
         j=0;
         for i in projects["projects"]:
             j=j+1
-            project_id_dict[str(i["name"])]=str((i["id"]))
+            project_id_dict[str(i["name"]).replace(" ","-")]=str((i["id"]))
             project_dict[j]=str((i["name"])).replace(" ","-")
-            project_list=project_list+str(j)+") "+str((i["name"]))+"\n"
+            project_list=project_list+str(j)+") "+str((i["name"]).replace(" ","-"))+"\n"
     except Exception as e:
         logger.error("error getting project list: "+str(e))
     return project_dict,project_list,project_id_dict;
@@ -148,13 +148,13 @@ async def add_person(ctx,bot, project_id,project_name):
             logger.error("error adding member "+str(e))
 
 async def remove_mem(ctx,bot, project_id,project_name):
-    logger.info("remove_user1 function called")
+    logger.info("remove_user function called")
     
     if not 'REDMINE_KEY' in os.environ:
         logger.error("'REDMINE_KEY' doesn't exist in the environment variables")
         return
     logger.info("~remove_person called for " + os.environ.get('REDMINE_KEY'))
-    
+
     desc = ""
     udict = dict()
     mjson = redmine_api.get_json(webpage + "projects/" + project_id + "/memberships.json", header)
@@ -184,13 +184,13 @@ async def remove_mem(ctx,bot, project_id,project_name):
             try:
                 ecode = requests.delete(webpage + "memberships/" + str(udict[i]) + ".json", headers = header)
                 print(ecode)
-                if(str(ecode)=="<Response [200]>"):
+                if(str(ecode)=="<Response [204]>"):
                     logger.info("Removed user ID: " + str(i) + "\n")
                     member_add_embed=discord.Embed(title="Removed user from project: "+project_name+"\nUser ID: "+str(i),description=ecode,colour=0x11806a)
                     await ctx.send(embed=member_add_embed,delete_after=15)
                     await ctx.message.delete()
                 else:
-                    logger.error("error removing member "+str(e)+" "+str(ecode))
+                    logger.error("error removing member  "+str(ecode))
                     await ctx.message.delete()
             except Exception as e:
                 logger.error("error removing member "+str(e))
@@ -202,10 +202,10 @@ def issues(project_name):
     name=str(project_name)
     
     issue_url =webpage+"projects/"+name+"/issues.json?set_filter=1"
-
+    list =""
     try:
         issues = get_json(issue_url, header).json()
-        list =""
+        
         for i in issues["issues"]:
 
             due=i["due_date"]
